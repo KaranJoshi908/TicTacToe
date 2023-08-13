@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState , useRef } from 'react'
 import { Square } from './Square'
+import { Score } from './Score'
 import '../CSS/Board.CSS'
 
 export const Board = () => {
   const [gameState , setGameState] = useState(Array(9).fill(null));
   const [isXTurn , setIsXTurn] = useState(true);
+  const score = useRef({
+    x : 0,
+    o : 0,
+    draw : 0
+  });
 
   const handleSquareClicked = (index) => {
     const copiedGameState = [...gameState]
@@ -31,6 +37,7 @@ export const Board = () => {
     for (let logic of winnerLogic) {
       const [a, b, c] = logic;
       if (gameState[a] !== null && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+        score.current[gameState[a].toLowerCase()]++;
         return {
           isGameDraw : false,
           isWinner : true,
@@ -49,6 +56,7 @@ export const Board = () => {
     }
 
     if(isGameDraw){
+      score.current.draw ++;      
       return {
         isGameDraw : true,
         isWinner : false,
@@ -71,6 +79,7 @@ export const Board = () => {
   const isWinner = checkForWin();
 
   return (
+    <>
     <div className="board-container">
      {isWinner.isGameDraw || isWinner.isWinner ? (
       isWinner.isGameDraw ? (
@@ -105,5 +114,7 @@ export const Board = () => {
      </>
      )}
     </div>
+    <Score score={score.current}/> 
+    </>
   );
 }
